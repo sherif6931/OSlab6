@@ -9,9 +9,8 @@ pid_t child2_pid;
 
 void sigchld_handler(int sig) {
     int status;
-    pid_t pid = wait(&status);
-
-    if (pid == -1) return;
+    pid_t pid = waitpid(-1, &status, WNOHANG);
+    if (pid <= 0) return;
 
     if (pid != child2_pid) {
         int exit_code = WEXITSTATUS(status);
@@ -20,10 +19,14 @@ void sigchld_handler(int sig) {
         } else {
             kill(child2_pid, SIGCONT);
         }
+    } else {
+        // Child2 exited → terminate parent cleanly
+        exit(0);
     }
 }
 
 int main() {
+    setbuf(stdout, NULL); // Disable buffering so output shows immediately
     signal(SIGCHLD, sigchld_handler);
 
     pid_t child1_pid = fork();
@@ -38,14 +41,11 @@ int main() {
     child2_pid = fork();
     if (child2_pid == 0) {
         printf("Child2 PID: %d Parent PID: %d\n", getpid(), getppid());
-        kill(getpid(), SIGSTOP);
+        fflush(stdout);
+        raise(SIGSTOP);
         printf("child process is resumed\n");
         exit(0);
     }
 
-    while(1) {
-        pause();
-    }
-
-    return 0;
+    while (1) pause();
 }
