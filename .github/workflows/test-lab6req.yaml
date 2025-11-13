@@ -29,33 +29,33 @@ jobs:
           $p = Start-Process -FilePath ".\bin\out.exe" -RedirectStandardInput $in -RedirectStandardOutput $out -NoNewWindow -PassThru
 
           if (-not $p.WaitForExit(15000)) { 
-            $errors += "❎ Program timeout (input=$input)"
+            $errors += "❎ Program timeout"
           }
 
           $output = Get-Content $out -Raw
 
           if ($output -notmatch "Child1 PID:.*Parent PID:") { 
-            $errors += "❎ Child1 PID/Parent Requirement Failed (input=$input)"
+            $errors += "❎ Child1 PID/Parent Requirement Failed"
           }
 
           if ($output -notmatch "Child2 PID:.*Parent PID:") { 
-            $errors += "❎ Child2 PID/Parent Requirement Failed (input=$input)"
+            $errors += "❎ Child2 PID/Parent Requirement Failed"
           }
 
           if ($input -eq "1" -and $output -match "child process is resumed") { 
-            $errors += "❎ Child2 should have been killed (input=$input)"
+            $errors += "❎ Child2 Should Have Been Killed"
           }
 
           if ($input -eq "0" -and $output -notmatch "child process is resumed") { 
-            $errors += "❎ Child2 should have been resumed (input=$input)"
+            $errors += "❎ Child2 Should Have Been Resumed"
           }
 
           if (-not $p.HasExited) { 
-            $errors += "❎ Program did not terminate properly (input=$input)"
+            $errors += "❎ Program Did Not Terminate Properly"
           }
         }
 
         if ($errors.Count -gt 0) {
           $errors | ForEach-Object { Write-Host $_ }
-          Write-Error "❌ One or more requirements failed."
+          Write-Error "❌ FAILURE"
         }
