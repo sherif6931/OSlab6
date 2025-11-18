@@ -42,7 +42,7 @@ void sigchld_handler(int SIG) {
         #endif
         
     } else {
-        if (WIFEXITED(proc.status)) {
+        if (WIFEXITED(proc.status) || WIFSIGNALED(proc.status)) {
             
             _exit(0);
         }
