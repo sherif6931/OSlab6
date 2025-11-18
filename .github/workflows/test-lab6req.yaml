@@ -22,4 +22,5 @@ jobs:
     - name: Check output
       shell: bash
       run: |
+        chmod +x ./script/script.sh
         ./script/script.sh
