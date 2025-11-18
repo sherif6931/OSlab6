@@ -24,7 +24,7 @@ jobs:
       run: |
         errors=""
 
-        for input in 1 0; do
+        for input in 0 1; do
           echo "$input" > "in${input}.txt"
           timeout 15s ./bin/out < "in${input}.txt" > "out${input}.txt" 2>&1 || errors+="❎ Program Timeout"$'\n'
 
@@ -40,13 +40,13 @@ jobs:
           if [[ "$input" == "0" && ! "$output" =~ Child\ process\ resumed ]]; then
             errors+="❎ Child2 Should Have Been Resumed"$'\n'
           fi
+
+          if [[ "$input" == "1" && ! "$output" =~ INTERRUPT=9 ]]; then
+            errors+="❎ Child2 should have been killed by SIGKILL (interrupt=9)"$'\n'
+          fi
         done
 
         if [[ -n "$errors" ]]; then
           echo "$errors"
           exit 1
-        fi
-
-        if [[ "$input" == "1" && ! "$output" =~ INTERRUPT=9 ]]; then
-          errors+="❎ Child2 should have been killed by SIGKILL (interrupt=9)"$'\n'
         fi
