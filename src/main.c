@@ -67,18 +67,18 @@ int main() {
         perror("pipe");
 
         exit(1);
-    } else {
-        p_job _read;
-        
-        _read.p = fork();
-        if (_read.p == 0) {
-            while (sig_read(&_read.status) > 0) {
+    } 
 
-                fprintf(stderr, "[INTERRUPT=%d]\n", _read.status);
-            }
+    p_job _read;
+    
+    _read.p = fork();
+    if (_read.p == 0) {
+        while (sig_read(&_read.status) > 0) {
 
-            _exit(0);
+            fprintf(stderr, "[INTERRUPT=%d]\n", _read.status);
         }
+
+        _exit(0);
     }
 
     p_job child1;
