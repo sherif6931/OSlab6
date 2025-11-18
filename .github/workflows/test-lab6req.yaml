@@ -22,30 +22,4 @@ jobs:
     - name: Check output
       shell: bash
       run: |
-        errors=""
-
-        for input in 0 1; do
-          ./bin/out <<EOF > out${input}.txt 2>&1
-          $input
-          EOF
-
-          output=$(cat out${input}.txt)
-
-          [[ "$output" =~ Child1\ PID:.*Parent\ PID: ]] || errors+="❎ Child1 PID/Parent Requirement Failed for input $input"$'\n'
-          [[ "$output" =~ Child2\ PID:.*Parent\ PID: ]] || errors+="❎ Child2 PID/Parent Requirement Failed for input $input"$'\n'
-
-          if [[ "$input" == "0" && ! "$output" =~ "Child process resumed" ]]; then
-            errors+="❎ Child2 Should Have Been Resumed"$'\n'
-          fi
-
-          if [[ "$input" == "1" && ! "$output" =~ "INTERRUPT=9" ]]; then
-            errors+="❎ Child2 should have been killed by SIGKILL (interrupt=9)"$'\n'
-          fi
-        done
-
-        if [[ -n "$errors" ]]; then
-            echo "$errors"
-            exit 1
-        fi
-
-        echo "✅ All checks passed"
+        ./script/script.sh
